@@ -1,70 +1,57 @@
 import { useState } from "react";
-import { StyleSheet, View, FlatList, Button } from "react-native";
+import { StyleSheet, View, FlatList, Text, Button } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import GoalItem from "./components/GoalItem";
-import GoalInput from "./components/GoalInput";
+import { NavigationContainer, StackActions } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import CategoriesScreen from "./screens/CategoriesScreen";
+import MealsDetailScreen from "./screens/MealsDetailScreen";
+import MealsOverViewScreen from "./screens/MealsOverViewScreen";
 
 export default function App() {
-  const [courseGoal, setCourseGoal] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const startAddGoalHandler = () => {
-    setIsModalVisible(true);
-  };
-  const endAddGoalHandler = () => {
-    setIsModalVisible(false);
-  };
-
-  const addGoalHandler = (enterGoalText) => {
-    setCourseGoal((preValue) => [
-      ...preValue,
-      { text: enterGoalText, id: Math.random().toString() },
-    ]);
-    endAddGoalHandler();
-  };
-
-  const deleteGoalHandle = (id) => {
-    setCourseGoal((cuurrentCourseGoal) => {
-      return cuurrentCourseGoal.filter((goal) => goal.id !== id);
-    });
-  };
-
+  const Stack = createNativeStackNavigator();
   return (
     <>
       <StatusBar style="light" />
-      <View style={styles.appContainer}>
-        <Button
-          title="add new goal"
-          color="#a065ec"
-          onPress={startAddGoalHandler}
-        ></Button>
-        {isModalVisible && (
-          <>
-            <GoalInput
-              onAddGoal={addGoalHandler}
-              onCancel={endAddGoalHandler}
-              visible={isModalVisible}
-            />
-          </>
-        )}
-        <View style={styles.goalsContainer}>
-          <FlatList
-            data={courseGoal}
-            keyExtractor={(item, index) => {
-              return item.id;
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "#351401",
+            },
+            headerTintColor: "white",
+            contentStyle: {
+              backgroundColor: "#3f2f25",
+            },
+          }}
+        >
+          <Stack.Screen
+            name="MealsCategories"
+            component={CategoriesScreen}
+            options={{
+              title: "All categories",
             }}
-            renderItem={(itemData) => {
-              return (
-                <GoalItem
-                  text={itemData.item.text}
-                  id={itemData.item.id}
-                  onDeleteItem={deleteGoalHandle}
-                />
-              );
-            }}
-          ></FlatList>
-        </View>
-      </View>
+          />
+          <Stack.Screen
+            name="MealsOverViewScreen"
+            component={MealsOverViewScreen}
+            // options={({ route, navigation }) => {
+            //   const catId = route.params.categoryId;
+            //   return {
+            //     title: catId,
+            //   };
+            // }}
+          />
+          <Stack.Screen
+            name="MealsDetailScreen"
+            component={MealsDetailScreen}
+            // options={{
+            //   headerRight: () => {
+            //     return <Button title="Tap it" />;
+            //   },
+            // }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </>
   );
 }
